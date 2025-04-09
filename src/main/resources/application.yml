@@ -1,0 +1,7 @@
+server:
+  http2:
+    enabled: true
+  port: 8005
+spring:
+  application:
+    name: file-service

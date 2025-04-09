@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/file-service
+      auto-index-creation: true
+  kafka:
+    bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+    consumer:
+      group-id: file-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+eureka:
+  client:
+    enabled: false
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+file:
+  path: /uploads # 로컬 저장 위치
