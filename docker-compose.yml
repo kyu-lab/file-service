@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  file-service:
+    container_name: fapp
+    image: file-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://fmongo:27017/file-service
+      - CONFIG_SERVER_URL=http://172.17.0.1:8888
+    depends_on:
+      - mongo
+    volumes:
+      - ./uploads:/var/uploads  # 로컬 ./uploads → 컨테이너 /var/uploads 로 매핑
+    networks:
+      - my-network
+  mongo:
+    image: mongo:7
+    container_name: fmongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge
+volumes:
+  mongodata:
