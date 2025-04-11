@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # JAR 파일을 컨테이너로 복사
-COPY build/libs/users-service.jar users-service.jar
+COPY build/libs/file-service.jar file-service.jar
 
 # 실행 명령어
-ENTRYPOINT ["java", "-jar", "users-service.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-jar", "file-service.jar", "--spring.profiles.active=prod"]
