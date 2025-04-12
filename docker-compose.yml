@@ -11,10 +11,11 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://fmongo:27017/file-service
       - CONFIG_SERVER_URL=http://172.17.0.1:8888
+      - FILE_BASE_PATH=/var/uploads/
     depends_on:
       - mongo
     volumes:
-      - ./uploads:/var/uploads
+      - /var/uploads:/var/uploads
     networks:
       - my-network
   mongo:

@@ -70,7 +70,7 @@ public class FileService {
 	 */
 	public Mono<String> savePostImg(Mono<FilePart> file) {
 		String fileId = String.valueOf(UUID.randomUUID());
-		String filePath = "/post";
+		String filePath = baseFilePath + "/post";
 		return saveImage(file, filePath, fileId)
 				.flatMap(filePart -> {
 					// 파일 물리적 저장 및 메이정보 DB에 저장 후 파일 url 반환
@@ -82,8 +82,8 @@ public class FileService {
 	}
 
 	public Mono<String> saveUserImg(String userId, Mono<FilePart> file) {
-		String filePath = "/user/" + userId;
 		String fileId = String.valueOf(UUID.randomUUID());
+		String filePath = baseFilePath + "/user/" + userId;
 		return usersImgRepository.deleteByUserId(userId)
 				.flatMap(deleted -> {
 					// 0. 기존 이미지가 있다면 삭제
@@ -138,7 +138,7 @@ public class FileService {
 	private Mono<FilePart> saveImage(Mono<FilePart> file, String path, String fileId) {
 		return file.switchIfEmpty(Mono.error(new IllegalArgumentException("File is required")))
 				.flatMap(filePart -> {
-					Path dest = Path.of(baseFilePath + path);
+					Path dest = Path.of(path);
 
 					// 디렉토리가 없으면 생성, 있으면 무시
 					Mono<Void> createDir = Mono.fromCallable(() -> {
