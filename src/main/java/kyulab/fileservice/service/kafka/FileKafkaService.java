@@ -1,4 +1,4 @@
-package kyulab.fileservice.service;
+package kyulab.fileservice.service.kafka;
 
 import kyulab.fileservice.entity.PostImg;
 import kyulab.fileservice.repository.PostImgRepository;

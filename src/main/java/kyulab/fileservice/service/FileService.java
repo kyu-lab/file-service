@@ -6,6 +6,7 @@ import kyulab.fileservice.dto.FileData;
 import kyulab.fileservice.dto.kafka.UserImgDto;
 import kyulab.fileservice.repository.PostImgRepository;
 import kyulab.fileservice.repository.UsersImgRepository;
+import kyulab.fileservice.service.kafka.KafkaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,7 @@ public class FileService {
 	private final PostImgRepository postImgRepository;
 	private final KafkaService kafkaService;
 
-	@Value("${file.path:/uploads}")
+	@Value("${file.base-path:/uploads}")
 	String baseFilePath;
 
 	public Mono<FileData> getPostImage(String id) {
@@ -114,6 +115,7 @@ public class FileService {
 	public Mono<ResponseEntity<String>> uploadResponse(Mono<String> fileUrl) {
 		return fileUrl.map(ResponseEntity::ok)
 				.onErrorResume(e -> {
+					log.debug("uploadResponse error : {}", e.getMessage());
 					if (e instanceof IllegalArgumentException) {
 						return Mono.just(ResponseEntity
 								.status(HttpStatus.BAD_REQUEST)

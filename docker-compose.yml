@@ -1,8 +1,8 @@
-version: '3.8'
 services:
   file-service:
     container_name: fapp
     image: file-service:latest
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,12 +14,13 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./uploads:/var/uploads  # 로컬 ./uploads → 컨테이너 /var/uploads 로 매핑
+      - ./uploads:/var/uploads
     networks:
       - my-network
   mongo:
     image: mongo:7
     container_name: fmongo
+    restart: always
     ports:
       - "27017:27017"
     volumes:
@@ -28,6 +29,6 @@ services:
       - my-network
 networks:
   my-network:
-    driver: bridge
+    external: true
 volumes:
   mongodata:

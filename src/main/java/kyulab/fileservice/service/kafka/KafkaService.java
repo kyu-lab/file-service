@@ -1,4 +1,4 @@
-package kyulab.fileservice.service;
+package kyulab.fileservice.service.kafka;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,16 +36,19 @@ public class KafkaService {
 	}
 
 	@KafkaListener(topics = "post-save", groupId = "file-group")
-	public void consumeUserImg(ConsumerRecord<String, String> record) {
+	public Mono<Void> consumeUserImg(ConsumerRecord<String, String> record) {
+		List<String> tempImgList;
 		try {
-			List<String> tempImgList = objectMapper.readValue(
+			tempImgList = objectMapper.readValue(
 					record.value(),
 					new TypeReference<>() {}
 			);
-			fileKafkaService.completeImageUpload(tempImgList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("parsing value : {}", record.value());
+			log.error("parsing error : {}", e.getMessage());
+			throw new IllegalArgumentException("Kafka 데이터 파싱 실패", e);
 		}
+		return fileKafkaService.completeImageUpload(tempImgList);
 	}
 
 }
