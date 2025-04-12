@@ -23,7 +23,7 @@ public abstract class BaseFileEntity {
 		this.id = fileId;
 		this.fileName = file.filename();
 		this.fileRealName = fileId + "_" + file.filename();
-		this.filePath = "/uploads" + filePath + File.separator + this.fileRealName;
+		this.filePath = filePath + File.separator + this.fileRealName;
 		this.fileUrl = fileUrl + fileId;
 		this.contentType = file.headers().getContentType().toString();
 	}
