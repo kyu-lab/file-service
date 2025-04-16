@@ -26,18 +26,29 @@ public class FileController {
 		return fileService.getImage(fileService.getUserImgPath(imageId));
 	}
 
+	@GetMapping("/image/group/{imageId}")
+	public Mono<ResponseEntity<Flux<DataBuffer>>> getGroupImage(@PathVariable String imageId) {
+		return fileService.getImage(fileService.getGroupImgPath(imageId));
+	}
+
 	@PostMapping("/upload/user/image")
 	public Mono<ResponseEntity<String>> uploadUserImage(
 			@RequestPart("file") Mono<FilePart> file,
 			@RequestParam("userId") String userId) {
 		return fileService.uploadResponse(fileService.saveUserImg(userId, file));
-
 	}
 
 	@PostMapping("/upload/post/image")
 	public Mono<ResponseEntity<String>> uploadPostImage(
 			@RequestPart("file") Mono<FilePart> file) {
 		return fileService.uploadResponse(fileService.savePostImg(file));
+	}
+
+	@PostMapping("/upload/group/image")
+	public Mono<ResponseEntity<String>> uploadGroupImage(
+			@RequestPart("file") Mono<FilePart> file,
+			@RequestParam("type") String type) {
+		return fileService.uploadResponse(fileService.saveGroupImg(file, type));
 	}
 
 }

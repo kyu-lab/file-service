@@ -1,5 +1,6 @@
 package kyulab.fileservice.dto;
 
+import kyulab.fileservice.entity.GroupImg;
 import kyulab.fileservice.entity.PostImg;
 import kyulab.fileservice.entity.UsersImg;
 import lombok.Getter;
@@ -31,6 +32,10 @@ public class FileData {
 
 	public static FileData of(PostImg postImg) {
 		return new FileData(Path.of(postImg.getFilePath()), postImg.getContentType(), postImg.getFileName());
+	}
+
+	public static FileData of(GroupImg groupImg) {
+		return new FileData(Path.of(groupImg.getFilePath()), groupImg.getContentType(), groupImg.getFileName());
 	}
 
 }
