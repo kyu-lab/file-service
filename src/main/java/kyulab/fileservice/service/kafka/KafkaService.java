@@ -36,6 +36,22 @@ public class KafkaService {
 	}
 
 	@KafkaListener(topics = "post-save", groupId = "file-group")
+	public Mono<Void> consumePostSave(ConsumerRecord<String, String> record) {
+		List<String> tempImgList;
+		try {
+			tempImgList = objectMapper.readValue(
+					record.value(),
+					new TypeReference<>() {}
+			);
+		} catch (Exception e) {
+			log.error("parsing value : {}", record.value());
+			log.error("parsing error : {}", e.getMessage());
+			throw new IllegalArgumentException("Kafka 데이터 파싱 실패", e);
+		}
+		return fileKafkaService.completeImageUpload(tempImgList);
+	}
+
+	@KafkaListener(topics = "post-save", groupId = "file-group")
 	public Mono<Void> consumeUserImg(ConsumerRecord<String, String> record) {
 		List<String> tempImgList;
 		try {
