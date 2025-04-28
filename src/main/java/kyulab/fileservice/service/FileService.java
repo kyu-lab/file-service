@@ -1,9 +1,11 @@
 package kyulab.fileservice.service;
 
+import kyulab.fileservice.entity.GroupImg;
 import kyulab.fileservice.entity.PostImg;
 import kyulab.fileservice.entity.UsersImg;
 import kyulab.fileservice.dto.FileData;
 import kyulab.fileservice.dto.kafka.UserImgDto;
+import kyulab.fileservice.repository.GroupImgRepository;
 import kyulab.fileservice.repository.PostImgRepository;
 import kyulab.fileservice.repository.UsersImgRepository;
 import kyulab.fileservice.service.kafka.KafkaService;
@@ -33,6 +35,7 @@ public class FileService {
 
 	private final UsersImgRepository usersImgRepository;
 	private final PostImgRepository postImgRepository;
+	private final GroupImgRepository groupImgRepository;
 	private final KafkaService kafkaService;
 
 	@Value("${file.base-path:/uploads}")
@@ -41,11 +44,17 @@ public class FileService {
 	public Mono<FileData> getPostImage(String id) {
 		return postImgRepository.findById(id)
 				.map(FileData::of)
-				.switchIfEmpty(Mono.error(new RuntimeException("User image not found")));
+				.switchIfEmpty(Mono.error(new RuntimeException("Post image not found")));
 	}
 
 	public Mono<FileData> getUserImgPath(String id) {
 		return usersImgRepository.findById(id)
+				.map(FileData::of)
+				.switchIfEmpty(Mono.error(new RuntimeException("User image not found")));
+	}
+
+	public Mono<FileData> getGroupImgPath(String id) {
+		return groupImgRepository.findById(id)
 				.map(FileData::of)
 				.switchIfEmpty(Mono.error(new RuntimeException("User image not found")));
 	}
@@ -110,6 +119,19 @@ public class FileService {
 				})
 				.doOnError(e -> log.error("Error : {}", e.getMessage()))
 		).doOnError(e -> log.error("User Image delete Fail : {}", e.getMessage()));
+	}
+
+	public Mono<String> saveGroupImg(Mono<FilePart> file, String type) {
+		String fileId = String.valueOf(UUID.randomUUID());
+		String filePath = baseFilePath + "/group";
+		return saveImage(file, filePath, fileId)
+				.flatMap(filePart -> {
+					// 파일 물리적 저장 및 메이정보 DB에 저장 후 파일 url 반환
+					GroupImg groupImg = new GroupImg(fileId, filePart, filePath, type);
+					return groupImgRepository.save(groupImg)
+							.thenReturn(groupImg.getFileUrl());
+				})
+				.doOnError(e -> log.error("Error : {}", e.getMessage()));
 	}
 
 	public Mono<ResponseEntity<String>> uploadResponse(Mono<String> fileUrl) {
